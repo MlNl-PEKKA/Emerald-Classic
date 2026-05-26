@@ -23,11 +23,13 @@
 #define tSound data[4]
 #define tButtonMode data[5]
 #define tWindowFrameType data[6]
+#define tLevelCapOff data[7]
 
 enum
 {
     MENUITEM_TEXTSPEED,
     MENUITEM_BATTLESCENE,
+    MENUITEM_LEVELCAP,
     MENUITEM_BATTLESTYLE,
     MENUITEM_SOUND,
     MENUITEM_BUTTONMODE,
@@ -44,6 +46,7 @@ enum
 
 #define YPOS_TEXTSPEED    (MENUITEM_TEXTSPEED * 16)
 #define YPOS_BATTLESCENE  (MENUITEM_BATTLESCENE * 16)
+#define YPOS_LEVELCAP     (MENUITEM_LEVELCAP * 16)
 #define YPOS_BATTLESTYLE  (MENUITEM_BATTLESTYLE * 16)
 #define YPOS_SOUND        (MENUITEM_SOUND * 16)
 #define YPOS_BUTTONMODE   (MENUITEM_BUTTONMODE * 16)
@@ -58,6 +61,8 @@ static u8 TextSpeed_ProcessInput(u8 selection);
 static void TextSpeed_DrawChoices(u8 selection);
 static u8 BattleScene_ProcessInput(u8 selection);
 static void BattleScene_DrawChoices(u8 selection);
+static u8 LevelCap_ProcessInput(u8 selection);
+static void LevelCap_DrawChoices(u8 selection);
 static u8 BattleStyle_ProcessInput(u8 selection);
 static void BattleStyle_DrawChoices(u8 selection);
 static u8 Sound_ProcessInput(u8 selection);
@@ -80,6 +85,7 @@ static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
 {
     [MENUITEM_TEXTSPEED]   = gText_TextSpeed,
     [MENUITEM_BATTLESCENE] = gText_BattleScene,
+    [MENUITEM_LEVELCAP]    = gText_LevelCap,
     [MENUITEM_BATTLESTYLE] = gText_BattleStyle,
     [MENUITEM_SOUND]       = gText_Sound,
     [MENUITEM_BUTTONMODE]  = gText_ButtonMode,
@@ -230,6 +236,7 @@ void CB2_InitOptionMenu(void)
         gTasks[taskId].tMenuSelection = 0;
         gTasks[taskId].tTextSpeed = gSaveBlock2Ptr->optionsTextSpeed;
         gTasks[taskId].tBattleSceneOff = gSaveBlock2Ptr->optionsBattleSceneOff;
+        gTasks[taskId].tLevelCapOff = gSaveBlock2Ptr->optionsLevelCapOff;
         gTasks[taskId].tBattleStyle = gSaveBlock2Ptr->optionsBattleStyle;
         gTasks[taskId].tSound = gSaveBlock2Ptr->optionsSound;
         gTasks[taskId].tButtonMode = gSaveBlock2Ptr->optionsButtonMode;
@@ -237,6 +244,7 @@ void CB2_InitOptionMenu(void)
 
         TextSpeed_DrawChoices(gTasks[taskId].tTextSpeed);
         BattleScene_DrawChoices(gTasks[taskId].tBattleSceneOff);
+        LevelCap_DrawChoices(gTasks[taskId].tLevelCapOff);
         BattleStyle_DrawChoices(gTasks[taskId].tBattleStyle);
         Sound_DrawChoices(gTasks[taskId].tSound);
         ButtonMode_DrawChoices(gTasks[taskId].tButtonMode);
@@ -308,6 +316,13 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             if (previousOption != gTasks[taskId].tBattleSceneOff)
                 BattleScene_DrawChoices(gTasks[taskId].tBattleSceneOff);
             break;
+        case MENUITEM_LEVELCAP:
+            previousOption = gTasks[taskId].tLevelCapOff;
+            gTasks[taskId].tLevelCapOff = LevelCap_ProcessInput(gTasks[taskId].tLevelCapOff);
+
+            if (previousOption != gTasks[taskId].tLevelCapOff)
+                LevelCap_DrawChoices(gTasks[taskId].tLevelCapOff);
+            break;
         case MENUITEM_BATTLESTYLE:
             previousOption = gTasks[taskId].tBattleStyle;
             gTasks[taskId].tBattleStyle = BattleStyle_ProcessInput(gTasks[taskId].tBattleStyle);
@@ -352,6 +367,7 @@ static void Task_OptionMenuSave(u8 taskId)
 {
     gSaveBlock2Ptr->optionsTextSpeed = gTasks[taskId].tTextSpeed;
     gSaveBlock2Ptr->optionsBattleSceneOff = gTasks[taskId].tBattleSceneOff;
+    gSaveBlock2Ptr->optionsLevelCapOff = gTasks[taskId].tLevelCapOff;
     gSaveBlock2Ptr->optionsBattleStyle = gTasks[taskId].tBattleStyle;
     gSaveBlock2Ptr->optionsSound = gTasks[taskId].tSound;
     gSaveBlock2Ptr->optionsButtonMode = gTasks[taskId].tButtonMode;
@@ -441,6 +457,17 @@ static void TextSpeed_DrawChoices(u8 selection)
     DrawOptionMenuChoice(gText_TextSpeedFast, GetStringRightAlignXOffset(FONT_NORMAL, gText_TextSpeedFast, 198), YPOS_TEXTSPEED, styles[2]);
 }
 
+static u8 LevelCap_ProcessInput(u8 selection)
+{
+    if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
+    {
+        selection ^= 1;
+        sArrowPressed = TRUE;
+    }
+
+    return selection;
+}
+
 static u8 BattleScene_ProcessInput(u8 selection)
 {
     if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
@@ -450,6 +477,18 @@ static u8 BattleScene_ProcessInput(u8 selection)
     }
 
     return selection;
+}
+
+static void LevelCap_DrawChoices(u8 selection)
+{
+    u8 styles[2];
+
+    styles[0] = 0;
+    styles[1] = 0;
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_LevelCapOn, 104, YPOS_LEVELCAP, styles[0]);
+    DrawOptionMenuChoice(gText_LevelCapOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_LevelCapOff, 198), YPOS_LEVELCAP, styles[1]);
 }
 
 static void BattleScene_DrawChoices(u8 selection)
