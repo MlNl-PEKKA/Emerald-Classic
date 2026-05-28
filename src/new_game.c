@@ -96,6 +96,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
     gSaveBlock2Ptr->optionsLevelCapOff = TRUE;
+    gSaveBlock2Ptr->optionsBattleClauseOff = TRUE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }
 
