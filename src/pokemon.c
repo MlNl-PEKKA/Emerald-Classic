@@ -2898,7 +2898,7 @@ void CalculateMonStats(struct Pokemon *mon)
 
 u8 MaxLevel(void)
 {
-    if(gSaveBlock2Ptr->optionsLevelCapOff)
+    if(gSaveBlock2Ptr->optionsLevelCapOff_CLASSIC_LEVELCAPS)
         return MAX_LEVEL;
     else if(FlagGet(FLAG_DEFEATED_METEOR_FALLS_STEVEN))
         return 100;
