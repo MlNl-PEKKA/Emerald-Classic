@@ -4960,7 +4960,7 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc task)
     u16 *itemPtr = &gSpecialVar_ItemId;
     bool8 cannotUseEffect;
 
-    if (GetMonData(mon, MON_DATA_LEVEL) < MaxLevel())
+    if (GetMonData(mon, MON_DATA_LEVEL) < MaxLevel_CLASSIC_LEVELCAPS())
     {
         BufferMonStatsToTaskData(mon, arrayPtr);
         cannotUseEffect = ExecuteTableBasedItemEffect_(gPartyMenu.slotId, *itemPtr, 0);
