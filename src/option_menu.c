@@ -27,7 +27,7 @@
 #define tBattleClauseOff data[8]
 #define tMenuOffset data[9]
 
-#define MENUITEM_MAX 7
+#define MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU 7
 
 enum
 {
@@ -72,8 +72,8 @@ static void ButtonMode_DrawChoices(u8 selection, u8 offset);
 static void DrawHeaderText(void);
 static void DrawOptionMenuTexts(void);
 static void DrawBgWindowFrames(void);
-static bool8 checkInWindow(u8 pos, u8 offset);
-static void ReDrawMenu(u8 taskId);
+static bool8 checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(u8 pos, u8 offset);
+static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId);
 
 EWRAM_DATA static bool8 sArrowPressed = FALSE;
 
@@ -244,7 +244,7 @@ void CB2_InitOptionMenu(void)
         gTasks[taskId].tButtonMode = gSaveBlock2Ptr->optionsButtonMode;
         gTasks[taskId].tWindowFrameType = gSaveBlock2Ptr->optionsWindowFrameType;
 
-        ReDrawMenu(taskId);
+        ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
 
         gMain.state++;
         break;
@@ -275,31 +275,31 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             gTasks[taskId].tMenuSelection--;
         else if((gTasks[taskId].tMenuSelection == 0) && (gTasks[taskId].tMenuOffset == 0))
         {
-            gTasks[taskId].tMenuSelection = MENUITEM_MAX - 1;
-            gTasks[taskId].tMenuOffset = MENUITEM_COUNT - MENUITEM_MAX;
-            ReDrawMenu(taskId);
+            gTasks[taskId].tMenuSelection = MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1;
+            gTasks[taskId].tMenuOffset = MENUITEM_COUNT - MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU;
+            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
         }
         else 
         {
             gTasks[taskId].tMenuOffset--;
-            ReDrawMenu(taskId);
+            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
         }
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
     }
     else if (JOY_NEW(DPAD_DOWN))
     {
-        if (gTasks[taskId].tMenuSelection < MENUITEM_MAX - 1)
+        if (gTasks[taskId].tMenuSelection < MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1)
             gTasks[taskId].tMenuSelection++;
         else if ((gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset) == MENUITEM_COUNT - 1)
         {
             gTasks[taskId].tMenuSelection = 0;
             gTasks[taskId].tMenuOffset = 0;
-            ReDrawMenu(taskId);
+            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
         }
         else
         {
             gTasks[taskId].tMenuOffset++;
-            ReDrawMenu(taskId);
+            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
         }
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
     }
@@ -449,9 +449,9 @@ static u8 TextSpeed_ProcessInput(u8 selection)
     return selection;
 }
 
-static bool8 checkInWindow(u8 pos, u8 offset)
+static bool8 checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(u8 pos, u8 offset)
 {
-    if((pos < offset)||((offset + MENUITEM_MAX - 1) < pos))
+    if((pos < offset)||((offset + MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1) < pos))
         return FALSE;
     return TRUE;
 }
@@ -462,7 +462,7 @@ static void TextSpeed_DrawChoices(u8 selection, u8 offset)
     u8 ypos =  (MENUITEM_TEXTSPEED - offset) * 16;
     s32 widthSlow, widthMid, widthFast, xMid;
 
-    if(!checkInWindow(MENUITEM_TEXTSPEED, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_TEXTSPEED, offset))
         return;
 
     styles[0] = 0;
@@ -521,7 +521,7 @@ static void LevelCap_DrawChoices_CLASSIC_LEVELCAPS(u8 selection, u8 offset)
     u8 styles[2];
     u8 ypos =  (MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS - offset) * 16;
 
-    if(!checkInWindow(MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS, offset))
         return;
 
     styles[0] = 0;
@@ -537,7 +537,7 @@ static void BattleClause_DrawChoices(u8 selection, u8 offset)
     u8 styles[2];
     u8 ypos =  (MENUITEM_BATTLECLAUSE - offset) * 16;
 
-    if(!checkInWindow(MENUITEM_BATTLECLAUSE, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BATTLECLAUSE, offset))
         return;
 
     styles[0] = 0;
@@ -555,7 +555,7 @@ static void BattleScene_DrawChoices(u8 selection, u8 offset)
     u8 styles[2];
     u8 ypos =  (MENUITEM_BATTLESCENE - offset) * 16;
 
-    if(!checkInWindow(MENUITEM_BATTLESCENE, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BATTLESCENE, offset))
         return;
 
     styles[0] = 0;
@@ -582,7 +582,7 @@ static void BattleStyle_DrawChoices(u8 selection, u8 offset)
     u8 styles[2];
     u8 ypos =  (MENUITEM_BATTLESTYLE - offset) * 16;
 
-    if(!checkInWindow(MENUITEM_BATTLESTYLE, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BATTLESTYLE, offset))
         return;
 
     styles[0] = 0;
@@ -610,7 +610,7 @@ static void Sound_DrawChoices(u8 selection, u8 offset)
     u8 styles[2];
     u8 ypos =  (MENUITEM_SOUND - offset) * 16;
 
-    if(!checkInWindow(MENUITEM_SOUND, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_SOUND, offset))
         return;
 
     styles[0] = 0;
@@ -655,7 +655,7 @@ static void FrameType_DrawChoices(u8 selection, u8 offset)
     u8 n = selection + 1;
     u16 i;
 
-    if(!checkInWindow(MENUITEM_FRAMETYPE, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_FRAMETYPE, offset))
         return;
 
     for (i = 0; gText_FrameTypeNumber[i] != EOS && i <= 5; i++)
@@ -712,7 +712,7 @@ static void ButtonMode_DrawChoices(u8 selection, u8 offset)
     u8 styles[3];
     u8 ypos =  (MENUITEM_BUTTONMODE - offset) * 16;
 
-    if(!checkInWindow(MENUITEM_BUTTONMODE, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BUTTONMODE, offset))
         return;
 
     styles[0] = 0;
@@ -745,17 +745,17 @@ static void DrawOptionMenuTexts(void)
     u8 i;
 
     FillWindowPixelBuffer(WIN_OPTIONS, PIXEL_FILL(1));
-    for (i = 0; i < MENUITEM_MAX; i++)
+    for (i = 0; i < MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU; i++)
         AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[i], 8, (i * 16) + 1, TEXT_SKIP_DRAW, NULL);
     CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);
 }
 
-static void ReDrawMenu(u8 taskId)
+static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId)
 {
     u8 i;
 
     FillWindowPixelBuffer(WIN_OPTIONS, PIXEL_FILL(1));
-    for (i = 0; i < MENUITEM_MAX; i++)
+    for (i = 0; i < MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU; i++)
         AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[gTasks[taskId].tMenuOffset + i], 8, (i * 16) + 1, TEXT_SKIP_DRAW, NULL);
 
     TextSpeed_DrawChoices(gTasks[taskId].tTextSpeed, gTasks[taskId].tMenuOffset);
