@@ -745,10 +745,6 @@
 		.4byte \pointer3 @ event script
 	.elseif \type == TRAINER_BATTLE_SINGLE_NO_INTRO_TEXT
 		.4byte \pointer1 @ text
-	.elseif \type == TRAINER_BATTLE_SINGLE_CONTINUE_SCRIPT_NO_INTRO
-		.4byte \pointer1 @ text
-		.4byte \pointer2 @ text
-		.4byte \pointer3 @ event script
 	.elseif \type == TRAINER_BATTLE_DOUBLE
 		.4byte \pointer1 @ text
 		.4byte \pointer2 @ text
