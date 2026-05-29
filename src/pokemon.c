@@ -2895,6 +2895,43 @@ void CalculateMonStats(struct Pokemon *mon)
     SetMonData(mon, MON_DATA_HP, &currentHP);
 }
 
+
+u8 MaxLevel_CLASSIC_LEVELCAPS(void)
+{
+    if(gSaveBlock2Ptr->optionsLevelCapOff_CLASSIC_LEVELCAPS)
+        return MAX_LEVEL;
+    else if(FlagGet(FLAG_DEFEATED_METEOR_FALLS_STEVEN))
+        return 100;
+    else if(FlagGet(FLAG_IS_CHAMPION))
+        return 78; 
+    else if(FlagGet(FLAG_DEFEATED_ELITE_4_DRAKE))
+        return 58;
+    else if(FlagGet(FLAG_DEFEATED_ELITE_4_GLACIA))
+        return 55;
+    else if(FlagGet(FLAG_DEFEATED_ELITE_4_PHOEBE))
+        return 53;
+    else if(FlagGet(FLAG_DEFEATED_ELITE_4_SIDNEY))
+        return 51;
+    else if(FlagGet(FLAG_DEFEATED_SOOTOPOLIS_GYM))
+        return 49;
+    else if(FlagGet(FLAG_DEFEATED_MOSSDEEP_GYM))
+        return 46;
+    else if(FlagGet(FLAG_DEFEATED_FORTREE_GYM))
+        return 42;
+    else if(FlagGet(FLAG_DEFEATED_PETALBURG_GYM))
+        return 33;
+    else if(FlagGet(FLAG_DEFEATED_LAVARIDGE_GYM))
+        return 31;
+    else if(FlagGet(FLAG_DEFEATED_MAUVILLE_GYM))
+        return 29;
+    else if(FlagGet(FLAG_DEFEATED_DEWFORD_GYM))
+        return 24;
+    else if(FlagGet(FLAG_DEFEATED_RUSTBORO_GYM))
+        return 19;
+    else
+        return 15;
+}
+
 void BoxMonToMon(const struct BoxPokemon *src, struct Pokemon *dest)
 {
     u32 value = 0;
@@ -4904,7 +4941,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
             // Rare Candy
             if ((itemEffect[i] & ITEM3_LEVEL_UP)
-             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MAX_LEVEL)
+             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MaxLevel_CLASSIC_LEVELCAPS())
             {
                 dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES, NULL)].growthRate][GetMonData(mon, MON_DATA_LEVEL, NULL) + 1];
                 SetMonData(mon, MON_DATA_EXP, &dataUnsigned);
@@ -6217,7 +6254,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
         expPoints = gExperienceTables[gSpeciesInfo[species].growthRate][MAX_LEVEL];
         SetMonData(mon, MON_DATA_EXP, &expPoints);
     }
-    if (nextLevel > MAX_LEVEL || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
+    if (nextLevel > MaxLevel_CLASSIC_LEVELCAPS()  || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
     {
         return FALSE;
     }
