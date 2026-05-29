@@ -554,8 +554,8 @@ static void LevelCap_DrawChoices_CLASSIC_LEVELCAPS(u8 selection, u8 offset)
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_LevelCapOn_CLASSIC_LEVELCAPS, 104, ypos, styles[0]);
-    DrawOptionMenuChoice(gText_LevelCapOff_CLASSIC_LEVELCAPS, GetStringRightAlignXOffset(FONT_NORMAL, gText_LevelCapOff_CLASSIC_LEVELCAPS, 198), ypos, styles[1]);
+    DrawOptionMenuChoice(gText_LevelCapOn_CLASSIC_LEVELCAPS, 104, ypos, styles[1]);
+    DrawOptionMenuChoice(gText_LevelCapOff_CLASSIC_LEVELCAPS, GetStringRightAlignXOffset(FONT_NORMAL, gText_LevelCapOff_CLASSIC_LEVELCAPS, 198), ypos, styles[0]);
 }
 
 static void BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(u8 selection, u8 offset)
@@ -570,8 +570,8 @@ static void BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(u8 selection, u8 offset)
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BetterTMHMOn_CLASSIC_BETTERTMHM, 104, ypos, styles[0]);
-    DrawOptionMenuChoice(gText_BetterTMHMOff_CLASSIC_BETTERTMHM, GetStringRightAlignXOffset(FONT_NORMAL, gText_BetterTMHMOff_CLASSIC_BETTERTMHM, 198), ypos, styles[1]);
+    DrawOptionMenuChoice(gText_BetterTMHMOn_CLASSIC_BETTERTMHM, 104, ypos, styles[1]);
+    DrawOptionMenuChoice(gText_BetterTMHMOff_CLASSIC_BETTERTMHM, GetStringRightAlignXOffset(FONT_NORMAL, gText_BetterTMHMOff_CLASSIC_BETTERTMHM, 198), ypos, styles[0]);
 }
 
 static void PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(u8 selection, u8 offset)
@@ -586,8 +586,8 @@ static void PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(u8 selection, u8 offset)
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_PermaRepelOn_CLASSIC_PERMAREPEL, 104, ypos, styles[0]);
-    DrawOptionMenuChoice(gText_PermaRepelOff_CLASSIC_PERMAREPEL, GetStringRightAlignXOffset(FONT_NORMAL, gText_PermaRepelOff_CLASSIC_PERMAREPEL, 198), ypos, styles[1]);
+    DrawOptionMenuChoice(gText_PermaRepelOn_CLASSIC_PERMAREPEL, 104, ypos, styles[1]);
+    DrawOptionMenuChoice(gText_PermaRepelOff_CLASSIC_PERMAREPEL, GetStringRightAlignXOffset(FONT_NORMAL, gText_PermaRepelOff_CLASSIC_PERMAREPEL, 198), ypos, styles[0]);
 }
 
 
