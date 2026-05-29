@@ -522,8 +522,8 @@ struct SaveBlock2
              u16 optionsBattleStyle:1; // OPTIONS_BATTLE_STYLE_[SHIFT/SET]
              u16 optionsBattleSceneOff:1; // whether battle animations are disabled
              u16 regionMapZoom:1; // whether the map is zoomed in
-             u16 optionsLevelCapOff_CLASSIC_LEVELCAPS:1; // whether level caps are disabled
-             u16 optionsBattleClauseOff_CLASSIC_BATTLECLAUSE:1; // whether battle clause are disabled
+             u16 optionsLevelCap_CLASSIC_LEVELCAPS:1; // whether level caps are disabled
+             u16 optionsBetterTMHM_CLASSIC_BETTERTMHM:1; // whether battle clause are disabled
              //u16 padding1:2; 2 bits left here
              //u16 padding2;
     /*0x18*/ struct Pokedex pokedex;

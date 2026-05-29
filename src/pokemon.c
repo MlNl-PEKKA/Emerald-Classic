@@ -2898,7 +2898,7 @@ void CalculateMonStats(struct Pokemon *mon)
 
 u8 MaxLevel_CLASSIC_LEVELCAPS(void)
 {
-    if(gSaveBlock2Ptr->optionsLevelCapOff_CLASSIC_LEVELCAPS)
+    if(!(gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAPS))
         return MAX_LEVEL;
     else if(FlagGet(FLAG_DEFEATED_METEOR_FALLS_STEVEN))
         return 100;
@@ -6597,6 +6597,8 @@ const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u
 bool32 IsHMMove2(u16 move)
 {
     int i = 0;
+    if(gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM)
+        return FALSE;
     while (sHMMoves[i] != HM_MOVES_END)
     {
         if (sHMMoves[i++] == move)
