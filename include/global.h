@@ -526,6 +526,7 @@ struct SaveBlock2
              u16 optionsForgetHMs_CLASSIC_FORGETHMS:1;
              u16 optionsInfiniteTMs_CLASSIC_INFINITETMS:1;
              u16 optionsPermaRepel_CLASSIC_PERMAREPEL:1;
+             u16 options1CostItems_CLASSIC_1COSTITEMS:1;
              //u16 padding2;
     /*0x18*/ struct Pokedex pokedex;
     /*0x90*/ u8 filler_90[0x8];

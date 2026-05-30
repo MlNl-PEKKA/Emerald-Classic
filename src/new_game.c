@@ -99,6 +99,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS = FALSE;
     gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = FALSE;
     gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = FALSE;
+    gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS = FALSE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }
 

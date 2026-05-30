@@ -884,6 +884,8 @@ u16 GetItemId(u16 itemId)
 
 u16 GetItemPrice(u16 itemId)
 {
+    if(gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS)
+        return 1;
     return gItems[SanitizeItemId(itemId)].price;
 }
 
