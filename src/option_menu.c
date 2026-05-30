@@ -24,10 +24,11 @@
 #define tSound data[4]
 #define tButtonMode data[5]
 #define tWindowFrameType data[6]
-#define tLevelCap_CLASSIC_LEVELCAPS data[7]
-#define tBetterTMHM_CLASSIC_BETTERTMHM data[8]
-#define tPermaRepel_CLASSIC_PERMAREPEL data[9]
-#define tMenuOffset data[10]
+#define tLevelCap_CLASSIC_LEVELCAP data[7]
+#define tForgetHMs_CLASSIC_FORGETHMS data[8]
+#define tInfiniteTMs_CLASSIC_INFINITETMS data[9]
+#define tPermaRepel_CLASSIC_PERMAREPEL data[10]
+#define tMenuOffset data[11]
 
 #define MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU 7
 
@@ -39,8 +40,9 @@ enum
     MENUITEM_SOUND,
     MENUITEM_BUTTONMODE,
     MENUITEM_FRAMETYPE,
-    MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS,
-    MENUITEM_BETTERTMHM_CLASSIC_BETTERTMHM,
+    MENUITEM_LEVELCAP_CLASSIC_LEVELCAP,
+    MENUITEM_FORGETHMS_CLASSIC_FORGETHMS,
+    MENUITEM_INFINITETMS_CLASSIC_INFINITETMS,
     MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL,
     MENUITEM_COUNT,
 };
@@ -60,10 +62,12 @@ static u8 TextSpeed_ProcessInput(u8 selection);
 static void TextSpeed_DrawChoices(u8 selection, u8 offset);
 static u8 BattleScene_ProcessInput(u8 selection);
 static void BattleScene_DrawChoices(u8 selection, u8 offset);
-static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAPS(u8 selection);
-static void LevelCap_DrawChoices_CLASSIC_LEVELCAPS(u8 selection, u8 offset);
-static u8 BetterTMHM_ProcessInput_CLASSIC_BETTERTMHM(u8 selection);
-static void BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(u8 selection, u8 offset);
+static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAP(u8 selection);
+static void LevelCap_DrawChoices_CLASSIC_LEVELCAP(u8 selection, u8 offset);
+static u8 ForgetHMs_ProcessInput_CLASSIC_FORGETHMS(u8 selection);
+static void ForgetHMs_DrawChoices_CLASSIC_FORGETHMS(u8 selection, u8 offset);
+static u8 InfiniteTMs_ProcessInput_CLASSIC_INFINITETMS(u8 selection);
+static void InfiniteTMs_DrawChoices_CLASSIC_INFINITETMS(u8 selection, u8 offset);
 static u8 PermaRepel_ProcessInput_CLASSIC_PERMAREPEL(u8 selection);
 static void PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(u8 selection, u8 offset);
 static u8 BattleStyle_ProcessInput(u8 selection);
@@ -94,8 +98,9 @@ static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
     [MENUITEM_SOUND]       = gText_Sound,
     [MENUITEM_BUTTONMODE]  = gText_ButtonMode,
     [MENUITEM_FRAMETYPE]   = gText_Frame,
-    [MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS] = gText_LevelCap_CLASSIC_LEVELCAPS,
-    [MENUITEM_BETTERTMHM_CLASSIC_BETTERTMHM] = gText_BetterTMHM_CLASSIC_BETTERTMHM,
+    [MENUITEM_LEVELCAP_CLASSIC_LEVELCAP] = gText_LevelCap_CLASSIC_LEVELCAP,
+    [MENUITEM_FORGETHMS_CLASSIC_FORGETHMS] = gText_ForgetHMs_CLASSIC_FORGETHMS,
+    [MENUITEM_INFINITETMS_CLASSIC_INFINITETMS] = gText_InfiniteTMs_CLASSIC_INFINITETMS,
     [MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL] = gText_PermaRepel_CLASSIC_PERMAREPEL
 };
 
@@ -243,8 +248,9 @@ void CB2_InitOptionMenu(void)
         gTasks[taskId].tMenuOffset = 0;
         gTasks[taskId].tTextSpeed = gSaveBlock2Ptr->optionsTextSpeed;
         gTasks[taskId].tBattleSceneOff = gSaveBlock2Ptr->optionsBattleSceneOff;
-        gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS = gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAPS;
-        gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM = gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM;
+        gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP = gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP;
+        gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS = gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS;
+        gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS = gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS;
         gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL = gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL;
         gTasks[taskId].tBattleStyle = gSaveBlock2Ptr->optionsBattleStyle;
         gTasks[taskId].tSound = gSaveBlock2Ptr->optionsSound;
@@ -358,19 +364,26 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             if (previousOption != gTasks[taskId].tWindowFrameType)
                 FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
             break;
-        case MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS:
-            previousOption = gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS;
-            gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS = LevelCap_ProcessInput_CLASSIC_LEVELCAPS(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS);
+        case MENUITEM_LEVELCAP_CLASSIC_LEVELCAP:
+            previousOption = gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP;
+            gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP = LevelCap_ProcessInput_CLASSIC_LEVELCAP(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP);
 
-            if (previousOption != gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS)
-                LevelCap_DrawChoices_CLASSIC_LEVELCAPS(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS, gTasks[taskId].tMenuOffset);
+            if (previousOption != gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP)
+                LevelCap_DrawChoices_CLASSIC_LEVELCAP(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP, gTasks[taskId].tMenuOffset);
             break;
-        case MENUITEM_BETTERTMHM_CLASSIC_BETTERTMHM:
-            previousOption = gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM;
-            gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM = BetterTMHM_ProcessInput_CLASSIC_BETTERTMHM(gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM);
+        case MENUITEM_FORGETHMS_CLASSIC_FORGETHMS:
+            previousOption = gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS;
+            gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS = ForgetHMs_ProcessInput_CLASSIC_FORGETHMS(gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS);
 
-            if (previousOption != gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM)
-                BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM, gTasks[taskId].tMenuOffset);
+            if (previousOption != gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS)
+                ForgetHMs_DrawChoices_CLASSIC_FORGETHMS(gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS, gTasks[taskId].tMenuOffset);
+            break;
+        case MENUITEM_INFINITETMS_CLASSIC_INFINITETMS:
+            previousOption = gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS;
+            gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS = InfiniteTMs_ProcessInput_CLASSIC_INFINITETMS(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS);
+
+            if (previousOption != gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS)
+                InfiniteTMs_DrawChoices_CLASSIC_INFINITETMS(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS, gTasks[taskId].tMenuOffset);
             break;
         case MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL:
             previousOption = gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL;
@@ -395,8 +408,9 @@ static void Task_OptionMenuSave(u8 taskId)
 {
     gSaveBlock2Ptr->optionsTextSpeed = gTasks[taskId].tTextSpeed;
     gSaveBlock2Ptr->optionsBattleSceneOff = gTasks[taskId].tBattleSceneOff;
-    gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAPS = gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS;
-    gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM = gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM;
+    gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP = gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP;
+    gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS = gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS;
+    gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS;
     gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL;
     gSaveBlock2Ptr->optionsBattleStyle = gTasks[taskId].tBattleStyle;
     gSaveBlock2Ptr->optionsSound = gTasks[taskId].tSound;
@@ -498,7 +512,7 @@ static void TextSpeed_DrawChoices(u8 selection, u8 offset)
     DrawOptionMenuChoice(gText_TextSpeedFast, GetStringRightAlignXOffset(FONT_NORMAL, gText_TextSpeedFast, 198), ypos, styles[2]);
 }
 
-static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAPS(u8 selection)
+static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAP(u8 selection)
 {
     if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
     {
@@ -509,7 +523,18 @@ static u8 LevelCap_ProcessInput_CLASSIC_LEVELCAPS(u8 selection)
     return selection;
 }
 
-static u8 BetterTMHM_ProcessInput_CLASSIC_BETTERTMHM(u8 selection)
+static u8 ForgetHMs_ProcessInput_CLASSIC_FORGETHMS(u8 selection)
+{
+    if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
+    {
+        selection ^= 1;
+        sArrowPressed = TRUE;
+    }
+
+    return selection;
+}
+
+static u8 InfiniteTMs_ProcessInput_CLASSIC_INFINITETMS(u8 selection)
 {
     if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
     {
@@ -542,36 +567,52 @@ static u8 BattleScene_ProcessInput(u8 selection)
     return selection;
 }
 
-static void LevelCap_DrawChoices_CLASSIC_LEVELCAPS(u8 selection, u8 offset)
+static void LevelCap_DrawChoices_CLASSIC_LEVELCAP(u8 selection, u8 offset)
 {       
     u8 styles[2];
-    u8 ypos =  (MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS - offset) * 16;
+    u8 ypos =  (MENUITEM_LEVELCAP_CLASSIC_LEVELCAP - offset) * 16;
 
-    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_LEVELCAP_CLASSIC_LEVELCAPS, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_LEVELCAP_CLASSIC_LEVELCAP, offset))
         return;
 
     styles[0] = 0;
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_LevelCapOn_CLASSIC_LEVELCAPS, 104, ypos, styles[1]);
-    DrawOptionMenuChoice(gText_LevelCapOff_CLASSIC_LEVELCAPS, GetStringRightAlignXOffset(FONT_NORMAL, gText_LevelCapOff_CLASSIC_LEVELCAPS, 198), ypos, styles[0]);
+    DrawOptionMenuChoice(gText_LevelCapOn_CLASSIC_LEVELCAP, 104, ypos, styles[1]);
+    DrawOptionMenuChoice(gText_LevelCapOff_CLASSIC_LEVELCAP, GetStringRightAlignXOffset(FONT_NORMAL, gText_LevelCapOff_CLASSIC_LEVELCAP, 198), ypos, styles[0]);
 }
 
-static void BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(u8 selection, u8 offset)
+static void ForgetHMs_DrawChoices_CLASSIC_FORGETHMS(u8 selection, u8 offset)
 {       
     u8 styles[2];
-    u8 ypos =  (MENUITEM_BETTERTMHM_CLASSIC_BETTERTMHM - offset) * 16;
+    u8 ypos =  (MENUITEM_FORGETHMS_CLASSIC_FORGETHMS - offset) * 16;
 
-    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_BETTERTMHM_CLASSIC_BETTERTMHM, offset))
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_FORGETHMS_CLASSIC_FORGETHMS, offset))
         return;
 
     styles[0] = 0;
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BetterTMHMOn_CLASSIC_BETTERTMHM, 104, ypos, styles[1]);
-    DrawOptionMenuChoice(gText_BetterTMHMOff_CLASSIC_BETTERTMHM, GetStringRightAlignXOffset(FONT_NORMAL, gText_BetterTMHMOff_CLASSIC_BETTERTMHM, 198), ypos, styles[0]);
+    DrawOptionMenuChoice(gText_ForgetHMsOn_CLASSIC_FORGETHMS, 104, ypos, styles[1]);
+    DrawOptionMenuChoice(gText_ForgetHMsOff_CLASSIC_FORGETHMS, GetStringRightAlignXOffset(FONT_NORMAL, gText_ForgetHMsOff_CLASSIC_FORGETHMS, 198), ypos, styles[0]);
+}
+
+static void InfiniteTMs_DrawChoices_CLASSIC_INFINITETMS(u8 selection, u8 offset)
+{       
+    u8 styles[2];
+    u8 ypos =  (MENUITEM_INFINITETMS_CLASSIC_INFINITETMS - offset) * 16;
+
+    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_INFINITETMS_CLASSIC_INFINITETMS, offset))
+        return;
+
+    styles[0] = 0;
+    styles[1] = 0;
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_InfiniteTMsOn_CLASSIC_INFINITETMS, 104, ypos, styles[1]);
+    DrawOptionMenuChoice(gText_InfiniteTMsOff_CLASSIC_INFINITETMS, GetStringRightAlignXOffset(FONT_NORMAL, gText_InfiniteTMsOff_CLASSIC_INFINITETMS, 198), ypos, styles[0]);
 }
 
 static void PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(u8 selection, u8 offset)
@@ -805,8 +846,9 @@ static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId)
     Sound_DrawChoices(gTasks[taskId].tSound, gTasks[taskId].tMenuOffset);
     ButtonMode_DrawChoices(gTasks[taskId].tButtonMode, gTasks[taskId].tMenuOffset);
     FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
-    LevelCap_DrawChoices_CLASSIC_LEVELCAPS(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAPS, gTasks[taskId].tMenuOffset);
-    BetterTMHM_DrawChoices_CLASSIC_BETTERTMHM(gTasks[taskId].tBetterTMHM_CLASSIC_BETTERTMHM, gTasks[taskId].tMenuOffset);
+    LevelCap_DrawChoices_CLASSIC_LEVELCAP(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP, gTasks[taskId].tMenuOffset);
+    ForgetHMs_DrawChoices_CLASSIC_FORGETHMS(gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS, gTasks[taskId].tMenuOffset);
+    InfiniteTMs_DrawChoices_CLASSIC_INFINITETMS(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS, gTasks[taskId].tMenuOffset);
     PermaRepel_DrawChoices_CLASSIC_PERMAREPEL(gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL, gTasks[taskId].tMenuOffset);
     HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
 

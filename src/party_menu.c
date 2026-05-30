@@ -4695,6 +4695,9 @@ bool8 IsMoveHm(u16 move)
 {
     u8 i;
 
+    if(gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS)
+        return FALSE;
+
     for (i = 0; i < NUM_HIDDEN_MACHINES; i++)
     {
         if (sTMHMMoves[i + NUM_TECHNICAL_MACHINES] == move)
@@ -4775,7 +4778,7 @@ static void Task_LearnedMove(u8 taskId)
     if (move[1] == 0)
     {
         AdjustFriendship(mon, FRIENDSHIP_EVENT_LEARN_TMHM);
-        if ((item < ITEM_HM01) && !(gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM))
+        if ((item < ITEM_HM01) && !(gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS))
             RemoveBagItem(item, 1);
     }
     GetMonNickname(mon, gStringVar1);
@@ -4960,7 +4963,7 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc task)
     u16 *itemPtr = &gSpecialVar_ItemId;
     bool8 cannotUseEffect;
 
-    if (GetMonData(mon, MON_DATA_LEVEL) < MaxLevel_CLASSIC_LEVELCAPS())
+    if (GetMonData(mon, MON_DATA_LEVEL) < MaxLevel_CLASSIC_LEVELCAP())
     {
         BufferMonStatsToTaskData(mon, arrayPtr);
         cannotUseEffect = ExecuteTableBasedItemEffect_(gPartyMenu.slotId, *itemPtr, 0);

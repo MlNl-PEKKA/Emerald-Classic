@@ -95,8 +95,9 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
-    gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAPS = FALSE;
-    gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM = FALSE;
+    gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP = FALSE;
+    gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS = FALSE;
+    gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = FALSE;
     gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = FALSE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }

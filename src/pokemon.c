@@ -2896,9 +2896,9 @@ void CalculateMonStats(struct Pokemon *mon)
 }
 
 
-u8 MaxLevel_CLASSIC_LEVELCAPS(void)
+u8 MaxLevel_CLASSIC_LEVELCAP(void)
 {
-    if(!(gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAPS))
+    if(!(gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP))
         return MAX_LEVEL;
     else if(FlagGet(FLAG_DEFEATED_METEOR_FALLS_STEVEN))
         return 100;
@@ -4941,7 +4941,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
             // Rare Candy
             if ((itemEffect[i] & ITEM3_LEVEL_UP)
-             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MaxLevel_CLASSIC_LEVELCAPS())
+             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MaxLevel_CLASSIC_LEVELCAP())
             {
                 dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES, NULL)].growthRate][GetMonData(mon, MON_DATA_LEVEL, NULL) + 1];
                 SetMonData(mon, MON_DATA_EXP, &dataUnsigned);
@@ -6254,7 +6254,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
         expPoints = gExperienceTables[gSpeciesInfo[species].growthRate][MAX_LEVEL];
         SetMonData(mon, MON_DATA_EXP, &expPoints);
     }
-    if (nextLevel > MaxLevel_CLASSIC_LEVELCAPS()  || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
+    if (nextLevel > MaxLevel_CLASSIC_LEVELCAP()  || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
     {
         return FALSE;
     }
@@ -6597,8 +6597,10 @@ const struct CompressedSpritePalette *GetMonSpritePalStructFromOtIdPersonality(u
 bool32 IsHMMove2(u16 move)
 {
     int i = 0;
-    if(gSaveBlock2Ptr->optionsBetterTMHM_CLASSIC_BETTERTMHM)
+
+    if(gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS)
         return FALSE;
+
     while (sHMMoves[i] != HM_MOVES_END)
     {
         if (sHMMoves[i++] == move)
