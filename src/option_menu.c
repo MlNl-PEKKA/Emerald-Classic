@@ -17,53 +17,30 @@
 #include "constants/rgb.h"
 #include "event_data.h"
 
-// #ifndef OPTIONS
-// #define OPTIONS(X) \
-//     X(TextSpeed, 3, \
-//       Y(Slow), Y(Medium), Y(Fast)) \
-//     X(BattleScene, 2, \
-//       Y(On), Y(Off)) \
-//     X(BattleStyle, 2, \
-//       Y(Shift), Y(Set))  \
-//     X(Sound, 2, \
-//       Y(Mono), Y(Stereo))  \
-//     X(ButtonMode, 2, \
-//       Y(On), Y(Off))  
-// #endif
+#define Y(option_name) gText_##option_name
+#define M(name) MENUITEM_##name
 
-#define MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU 7
+#define MENUITEM_MAX 7
 
 enum
 {
-    MENUITEM_TEXTSPEED,
-    MENUITEM_BATTLESCENE,
-    MENUITEM_BATTLESTYLE,
-    MENUITEM_SOUND,
-    MENUITEM_BUTTONMODE,
-    MENUITEM_LEVELCAP_CLASSIC_LEVELCAP,
-    MENUITEM_FORGETHMS_CLASSIC_FORGETHMS,
-    MENUITEM_INFINITETMS_CLASSIC_INFINITETMS,
-    MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL,
-    MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS,
-    MENUITEM_EVTRAINING_CLASSIC_EVTRAINING,
-    MENUITEM_FRAMETYPE,
-    MENUITEM_COUNT,
+    WindowFrameType,
+    COUNT,
+    MAX
 };
 
-#define tTextSpeed data[0]
-#define tBattleSceneOff data[1]
-#define tBattleStyle data[2]
-#define tSound data[3]
-#define tButtonMode data[4]
-#define tWindowFrameType data[5]
-#define tLevelCap_CLASSIC_LEVELCAP data[6]
-#define tForgetHMs_CLASSIC_FORGETHMS data[7]
-#define tInfiniteTMs_CLASSIC_INFINITETMS data[8]
-#define tPermaRepel_CLASSIC_PERMAREPEL data[9]
-#define t1CostItems_CLASSIC_1COSTITEMS data[10]
-#define tEVTraining_CLASSIC_EVTRAINING data[11]
-#define tMenuSelection data[12]
-#define tMenuOffset data[13]
+#define M_ENUMS(name, ...) M(name), 
+enum
+{
+    OPTIONS(M_ENUMS)
+    M(WindowFrameType),
+    M(COUNT),
+};
+#undef M_ENUMS
+
+#define tWindowFrameType data[M(WindowFrameType)]
+#define tMenuSelection data[M(COUNT)]
+#define tMenuOffset data[M(COUNT)+1]
 
 enum
 {
@@ -76,17 +53,17 @@ static void Task_OptionMenuProcessInput(u8 taskId);
 static void Task_OptionMenuSave(u8 taskId);
 static void Task_OptionMenuFadeOut(u8 taskId);
 static void HighlightOptionMenuItem(u8 selection);
-static bool8 checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(u8 pos, u8 offset);
-static void Draw3Choices(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b, const u8 *c);
-static void Draw2Choices(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b);
-static u8 Process3Input(u8 selection);
-static u8 Process2Input(u8 selection);
-static u8 FrameType_ProcessInput(u8 selection);
-static void FrameType_DrawChoices(u8 selection, u8 offset);
+static bool8 checkInWindow(u8 pos, u8 offset);
+static void DrawChoices3(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b, const u8 *c);
+static void DrawChoices2(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b);
+static u8 ProcessInput3(u8 selection);
+static u8 ProcessInput2(u8 selection);
+static u8 WindowFrameType_ProcessInput(u8 selection);
+static void WindowFrameType_DrawChoices(u8 selection, u8 offset);
 static void DrawHeaderText(void);
 static void DrawOptionMenuTexts(void);
 static void DrawBgWindowFrames(void);
-static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId);
+static void ReDrawMenu(u8 taskId);
 
 EWRAM_DATA static bool8 sArrowPressed = FALSE;
 
@@ -94,21 +71,13 @@ static const u16 sOptionMenuText_Pal[] = INCGFX_U16("graphics/interface/option_m
 // note: this is only used in the Japanese release
 static const u8 sEqualSignGfx[] = INCGFX_U8("graphics/interface/option_menu_equals_sign.png", ".4bpp");
 
-static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
+#define OPTIONS_MENU_ITEM_NAMES(name, ...) [M(name)] = Y(name),
+static const u8 *const sOptionMenuItemsNames[M(COUNT)] =
 {
-    [MENUITEM_TEXTSPEED]   = gText_TextSpeed,
-    [MENUITEM_BATTLESCENE] = gText_BattleScene,
-    [MENUITEM_BATTLESTYLE] = gText_BattleStyle,
-    [MENUITEM_SOUND]       = gText_Sound,
-    [MENUITEM_BUTTONMODE]  = gText_ButtonMode,
-    [MENUITEM_FRAMETYPE]   = gText_Frame,
-    [MENUITEM_LEVELCAP_CLASSIC_LEVELCAP] = gText_LevelCap_CLASSIC_LEVELCAP,
-    [MENUITEM_FORGETHMS_CLASSIC_FORGETHMS] = gText_ForgetHMs_CLASSIC_FORGETHMS,
-    [MENUITEM_INFINITETMS_CLASSIC_INFINITETMS] = gText_InfiniteTMs_CLASSIC_INFINITETMS,
-    [MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL] = gText_PermaRepel_CLASSIC_PERMAREPEL,
-    [MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS] = gText_1CostItems_CLASSIC_1COSTITEMS,
-    [MENUITEM_EVTRAINING_CLASSIC_EVTRAINING] = gText_EVTraining_CLASSIC_EVTRAINING
+    OPTIONS(OPTIONS_MENU_ITEM_NAMES)
+    [M(WindowFrameType)]   = Y(WindowFrameType),
 };
+#undef OPTIONS_MENU_ITEM_NAMES
 
 static const struct WindowTemplate sOptionMenuWinTemplates[] =
 {
@@ -250,22 +219,14 @@ void CB2_InitOptionMenu(void)
     {
         u8 taskId = CreateTask(Task_OptionMenuFadeIn, 0);
 
+        #define GET_DATA_ITEMS(name, ...)  gTasks[taskId].data[M(name)] = gSaveBlock2Ptr->options##name;
+            OPTIONS(GET_DATA_ITEMS)
+        #undef GET_DATA_ITEMS
         gTasks[taskId].tMenuSelection = 0;
         gTasks[taskId].tMenuOffset = 0;
-        gTasks[taskId].tTextSpeed = gSaveBlock2Ptr->optionsTextSpeed;
-        gTasks[taskId].tBattleSceneOff = gSaveBlock2Ptr->optionsBattleSceneOff;
-        gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP = gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP;
-        gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS = gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS;
-        gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS = gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS;
-        gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL = gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL;
-        gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS = gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS;
-        gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING = gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING;
-        gTasks[taskId].tBattleStyle = gSaveBlock2Ptr->optionsBattleStyle;
-        gTasks[taskId].tSound = gSaveBlock2Ptr->optionsSound;
-        gTasks[taskId].tButtonMode = gSaveBlock2Ptr->optionsButtonMode;
         gTasks[taskId].tWindowFrameType = gSaveBlock2Ptr->optionsWindowFrameType;
 
-        ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
+        ReDrawMenu(taskId);
 
         gMain.state++;
         break;
@@ -296,128 +257,64 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             gTasks[taskId].tMenuSelection--;
         else if((gTasks[taskId].tMenuSelection == 0) && (gTasks[taskId].tMenuOffset == 0))
         {
-            gTasks[taskId].tMenuSelection = MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1;
-            gTasks[taskId].tMenuOffset = MENUITEM_COUNT - MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU;
-            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
+            gTasks[taskId].tMenuSelection = M(MAX) - 1;
+            gTasks[taskId].tMenuOffset = M(COUNT) - M(MAX);
+            ReDrawMenu(taskId);
         }
         else 
         {
             gTasks[taskId].tMenuOffset--;
-            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
+            ReDrawMenu(taskId);
         }
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
     }
     else if (JOY_NEW(DPAD_DOWN))
     {
-        if (gTasks[taskId].tMenuSelection < MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1)
+        if (gTasks[taskId].tMenuSelection < M(MAX) - 1)
             gTasks[taskId].tMenuSelection++;
-        else if ((gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset) == MENUITEM_COUNT - 1)
+        else if ((gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset) == M(COUNT) - 1)
         {
             gTasks[taskId].tMenuSelection = 0;
             gTasks[taskId].tMenuOffset = 0;
-            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
+            ReDrawMenu(taskId);
         }
         else
         {
             gTasks[taskId].tMenuOffset++;
-            ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(taskId);
+            ReDrawMenu(taskId);
         }
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
     }
     else
     {
         u8 previousOption;
-
-        switch (gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset)
+        u8 selection = gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset;
+        #define Z(func, ...)  func(__VA_ARGS__ __VA_OPT__(,) gTasks[taskId].data[selection])
+        switch (selection)
         {
-        case MENUITEM_TEXTSPEED:
-            previousOption = gTasks[taskId].tTextSpeed;
-            gTasks[taskId].tTextSpeed = Process3Input(gTasks[taskId].tTextSpeed);
-
-            if (previousOption != gTasks[taskId].tTextSpeed)
-                Draw3Choices(gTasks[taskId].tTextSpeed, gTasks[taskId].tMenuOffset, MENUITEM_TEXTSPEED, gText_TextSpeedSlow, gText_TextSpeedMid, gText_TextSpeedFast);
-            break;
-        case MENUITEM_BATTLESCENE:
-            previousOption = gTasks[taskId].tBattleSceneOff;
-            gTasks[taskId].tBattleSceneOff = Process2Input(gTasks[taskId].tBattleSceneOff);
-
-            if (previousOption != gTasks[taskId].tBattleSceneOff)
-                Draw2Choices(gTasks[taskId].tBattleSceneOff, gTasks[taskId].tMenuOffset, MENUITEM_BATTLESCENE, gText_BattleSceneOn, gText_BattleSceneOff);
-            break;
-        case MENUITEM_BATTLESTYLE:
-            previousOption = gTasks[taskId].tBattleStyle;
-            gTasks[taskId].tBattleStyle = Process2Input(gTasks[taskId].tBattleStyle);
-
-            if (previousOption != gTasks[taskId].tBattleStyle)
-                Draw2Choices(gTasks[taskId].tBattleStyle, gTasks[taskId].tMenuOffset, MENUITEM_BATTLESTYLE, gText_BattleStyleShift, gText_BattleStyleSet);
-            break;
-        case MENUITEM_SOUND:
-            previousOption = gTasks[taskId].tSound;
-            gTasks[taskId].tSound = Process2Input(gTasks[taskId].tSound);
-            SetPokemonCryStereo(gTasks[taskId].tSound);
-            if (previousOption != gTasks[taskId].tSound)
-                Draw2Choices(gTasks[taskId].tSound, gTasks[taskId].tMenuOffset, MENUITEM_SOUND, gText_SoundMono, gText_SoundStereo);
-            break;
-        case MENUITEM_BUTTONMODE:
-            previousOption = gTasks[taskId].tButtonMode;
-            gTasks[taskId].tButtonMode = Process3Input(gTasks[taskId].tButtonMode);
-
-            if (previousOption != gTasks[taskId].tButtonMode)
-                Draw3Choices(gTasks[taskId].tButtonMode, gTasks[taskId].tMenuOffset, MENUITEM_BUTTONMODE, gText_ButtonTypeNormal, gText_ButtonTypeLR, gText_ButtonTypeLEqualsA);
-            break;
-        case MENUITEM_FRAMETYPE:
+        #define CASES(name, count, callback, ...) \
+        case M(name): \
+        { \
+            previousOption = gTasks[taskId].data[M(name)]; \
+            gTasks[taskId].data[M(name)] = ProcessInput##count(gTasks[taskId].data[M(name)]); \
+            callback; \
+            if(previousOption != gTasks[taskId].data[M(name)]) \
+                DrawChoices##count(gTasks[taskId].data[M(name)], gTasks[taskId].tMenuOffset, M(name), __VA_ARGS__); \
+            break; \
+        }
+        OPTIONS(CASES)
+        case M(WindowFrameType):
             previousOption = gTasks[taskId].tWindowFrameType;
-            gTasks[taskId].tWindowFrameType = FrameType_ProcessInput(gTasks[taskId].tWindowFrameType);
+            gTasks[taskId].tWindowFrameType = WindowFrameType_ProcessInput(gTasks[taskId].tWindowFrameType);
 
             if (previousOption != gTasks[taskId].tWindowFrameType)
-                FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
-            break;
-        case MENUITEM_LEVELCAP_CLASSIC_LEVELCAP:
-            previousOption = gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP;
-            gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP = Process2Input(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP);
-
-            if (previousOption != gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP)
-                Draw2Choices(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP, gTasks[taskId].tMenuOffset, MENUITEM_LEVELCAP_CLASSIC_LEVELCAP, gText_LevelCapOn_CLASSIC_LEVELCAP, gText_LevelCapOff_CLASSIC_LEVELCAP);
-            break;
-        case MENUITEM_FORGETHMS_CLASSIC_FORGETHMS:
-            previousOption = gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS;
-            gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS = Process2Input(gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS);
-
-            if (previousOption != gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS)
-                Draw2Choices(gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS, gTasks[taskId].tMenuOffset, MENUITEM_FORGETHMS_CLASSIC_FORGETHMS, gText_ForgetHMsOn_CLASSIC_FORGETHMS, gText_ForgetHMsOff_CLASSIC_FORGETHMS);
-            break;
-        case MENUITEM_INFINITETMS_CLASSIC_INFINITETMS:
-            previousOption = gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS;
-            gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS = Process2Input(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS);
-
-            if (previousOption != gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS)
-                Draw2Choices(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS, gTasks[taskId].tMenuOffset, MENUITEM_INFINITETMS_CLASSIC_INFINITETMS, gText_InfiniteTMsOn_CLASSIC_INFINITETMS, gText_InfiniteTMsOff_CLASSIC_INFINITETMS);
-            break;
-        case MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL:
-            previousOption = gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL;
-            gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL = Process2Input(gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL);
-            VarSet(VAR_REPEL_STEP_COUNT, gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL);
-            if (previousOption != gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL)
-                Draw2Choices(gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL, gTasks[taskId].tMenuOffset, MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL, gText_PermaRepelOn_CLASSIC_PERMAREPEL, gText_PermaRepelOff_CLASSIC_PERMAREPEL);
-            break;
-        case MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS:
-            previousOption = gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS;
-            gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS = Process2Input(gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS);
-
-            if (previousOption != gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS)
-                Draw2Choices(gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS, gTasks[taskId].tMenuOffset, MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS, gText_1CostItemsOn_CLASSIC_1COSTITEMS, gText_1CostItemsOff_CLASSIC_1COSTITEMS);
-            break;
-        case MENUITEM_EVTRAINING_CLASSIC_EVTRAINING:
-            previousOption = gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING;
-            gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING = Process3Input(gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING);
-
-            if (previousOption != gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING)
-                Draw3Choices(gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING, gTasks[taskId].tMenuOffset, MENUITEM_EVTRAINING_CLASSIC_EVTRAINING, gText_EVTrainingOff_CLASSIC_EVTRAINING, gText_EVTrainingVanilla_CLASSIC_EVTRAINING, gText_EVTrainingEasy_CLASSIC_EVTRAINING);
+                WindowFrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
             break;
         default:
             return;
+        #undef CASES
         }
-
+        #undef Z
         if (sArrowPressed)
         {
             sArrowPressed = FALSE;
@@ -428,17 +325,9 @@ static void Task_OptionMenuProcessInput(u8 taskId)
 
 static void Task_OptionMenuSave(u8 taskId)
 {
-    gSaveBlock2Ptr->optionsTextSpeed = gTasks[taskId].tTextSpeed;
-    gSaveBlock2Ptr->optionsBattleSceneOff = gTasks[taskId].tBattleSceneOff;
-    gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP = gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP;
-    gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS = gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS;
-    gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS;
-    gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL;
-    gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS = gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS;
-    gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING = gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING;
-    gSaveBlock2Ptr->optionsBattleStyle = gTasks[taskId].tBattleStyle;
-    gSaveBlock2Ptr->optionsSound = gTasks[taskId].tSound;
-    gSaveBlock2Ptr->optionsButtonMode = gTasks[taskId].tButtonMode;
+    #define SET_DATA_ITEMS(name, ...) gSaveBlock2Ptr->options##name = gTasks[taskId].data[M(name)];
+        OPTIONS(SET_DATA_ITEMS)
+    #undef SET_DATA_ITEMS
     gSaveBlock2Ptr->optionsWindowFrameType = gTasks[taskId].tWindowFrameType;
 
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
@@ -479,20 +368,20 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)
     AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, dst, x, y + 1, TEXT_SKIP_DRAW, NULL);
 }
 
-static bool8 checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(u8 pos, u8 offset)
+static bool8 checkInWindow(u8 pos, u8 offset)
 {
-    if((pos < offset)||((offset + MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU - 1) < pos))
+    if((pos < offset)||((offset + M(MAX) - 1) < pos))
         return FALSE;
     return TRUE;
 }
 
-static void Draw3Choices(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b, const u8 *c)
+static void DrawChoices3(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b, const u8 *c)
 {
     u8 styles[3];
     u8 ypos =  (menuitem - offset) * 16;
     s32 widthA, widthB, widthC, x2;
 
-    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(menuitem, offset))
+    if(!checkInWindow(menuitem, offset))
         return;
 
     styles[0] = 0;
@@ -513,12 +402,12 @@ static void Draw3Choices(u8 selection, u8 offset, u8 menuitem, const u8 *a, cons
     DrawOptionMenuChoice(c, GetStringRightAlignXOffset(FONT_NORMAL, c, 198), ypos, styles[2]);
 }
 
-static void Draw2Choices(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b)
+static void DrawChoices2(u8 selection, u8 offset, u8 menuitem, const u8 *a, const u8 *b)
 {       
     u8 styles[2];
     u8 ypos =  (menuitem - offset) * 16;
 
-    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(menuitem, offset))
+    if(!checkInWindow(menuitem, offset))
         return;
 
     styles[0] = 0;
@@ -529,7 +418,7 @@ static void Draw2Choices(u8 selection, u8 offset, u8 menuitem, const u8 *a, cons
     DrawOptionMenuChoice(b, GetStringRightAlignXOffset(FONT_NORMAL, b, 198), ypos, styles[0]);
 }
 
-static u8 Process3Input(u8 selection)
+static u8 ProcessInput3(u8 selection)
 {
     if (JOY_NEW(DPAD_RIGHT))
     {
@@ -552,7 +441,7 @@ static u8 Process3Input(u8 selection)
     return selection;
 }
 
-static u8 Process2Input(u8 selection)
+static u8 ProcessInput2(u8 selection)
 {
     if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
     {
@@ -563,14 +452,14 @@ static u8 Process2Input(u8 selection)
     return selection;
 }
 
-static void FrameType_DrawChoices(u8 selection, u8 offset)
+static void WindowFrameType_DrawChoices(u8 selection, u8 offset)
 {
     u8 text[16];
-    u8 ypos =  (MENUITEM_FRAMETYPE - offset) * 16;
+    u8 ypos =  (M(WindowFrameType) - offset) * 16;
     u8 n = selection + 1;
     u16 i;
 
-    if(!checkInWindow_CLASSIC_SLIDINGOPTIONSMENU(MENUITEM_FRAMETYPE, offset))
+    if(!checkInWindow(M(WindowFrameType), offset))
         return;
 
     for (i = 0; gText_FrameTypeNumber[i] != EOS && i <= 5; i++)
@@ -598,7 +487,7 @@ static void FrameType_DrawChoices(u8 selection, u8 offset)
     DrawOptionMenuChoice(text, 128, ypos, 1);
 }
 
-static u8 FrameType_ProcessInput(u8 selection)
+static u8 WindowFrameType_ProcessInput(u8 selection)
 {
     if (JOY_NEW(DPAD_RIGHT))
     {
@@ -637,31 +526,24 @@ static void DrawOptionMenuTexts(void)
     u8 i;
 
     FillWindowPixelBuffer(WIN_OPTIONS, PIXEL_FILL(1));
-    for (i = 0; i < MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU; i++)
+    for (i = 0; i < M(MAX); i++)
         AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[i], 8, (i * 16) + 1, TEXT_SKIP_DRAW, NULL);
     CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);
 }
 
-static void ReDrawMenu_CLASSIC_SLIDINGOPTIONSMENU(u8 taskId)
+static void ReDrawMenu(u8 taskId)
 {
     u8 i;
 
     FillWindowPixelBuffer(WIN_OPTIONS, PIXEL_FILL(1));
-    for (i = 0; i < MENUITEM_MAX_CLASSIC_SLIDINGOPTIONSMENU; i++)
+    for (i = 0; i < M(MAX); i++)
         AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[gTasks[taskId].tMenuOffset + i], 8, (i * 16) + 1, TEXT_SKIP_DRAW, NULL);
 
-    Draw3Choices(gTasks[taskId].tTextSpeed, gTasks[taskId].tMenuOffset, MENUITEM_TEXTSPEED, gText_TextSpeedSlow, gText_TextSpeedMid, gText_TextSpeedFast);
-    Draw2Choices(gTasks[taskId].tBattleSceneOff, gTasks[taskId].tMenuOffset, MENUITEM_BATTLESCENE, gText_BattleSceneOn, gText_BattleSceneOff);
-    Draw2Choices(gTasks[taskId].tBattleStyle, gTasks[taskId].tMenuOffset, MENUITEM_BATTLESTYLE, gText_BattleStyleShift, gText_BattleStyleSet);
-    Draw2Choices(gTasks[taskId].tSound, gTasks[taskId].tMenuOffset, MENUITEM_SOUND, gText_SoundMono, gText_SoundStereo);
-    Draw3Choices(gTasks[taskId].tButtonMode, gTasks[taskId].tMenuOffset, MENUITEM_BUTTONMODE, gText_ButtonTypeNormal, gText_ButtonTypeLR, gText_ButtonTypeLEqualsA);
-    FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
-    Draw2Choices(gTasks[taskId].tLevelCap_CLASSIC_LEVELCAP, gTasks[taskId].tMenuOffset, MENUITEM_LEVELCAP_CLASSIC_LEVELCAP, gText_LevelCapOn_CLASSIC_LEVELCAP, gText_LevelCapOff_CLASSIC_LEVELCAP);
-    Draw2Choices(gTasks[taskId].tForgetHMs_CLASSIC_FORGETHMS, gTasks[taskId].tMenuOffset, MENUITEM_FORGETHMS_CLASSIC_FORGETHMS, gText_ForgetHMsOn_CLASSIC_FORGETHMS, gText_ForgetHMsOff_CLASSIC_FORGETHMS);
-    Draw2Choices(gTasks[taskId].tInfiniteTMs_CLASSIC_INFINITETMS, gTasks[taskId].tMenuOffset, MENUITEM_INFINITETMS_CLASSIC_INFINITETMS, gText_InfiniteTMsOn_CLASSIC_INFINITETMS, gText_InfiniteTMsOff_CLASSIC_INFINITETMS);
-    Draw2Choices(gTasks[taskId].tPermaRepel_CLASSIC_PERMAREPEL, gTasks[taskId].tMenuOffset, MENUITEM_PERMAREPEL_CLASSIC_PERMAREPEL, gText_PermaRepelOn_CLASSIC_PERMAREPEL, gText_PermaRepelOff_CLASSIC_PERMAREPEL);
-    Draw2Choices(gTasks[taskId].t1CostItems_CLASSIC_1COSTITEMS, gTasks[taskId].tMenuOffset, MENUITEM_1COSTITEMS_CLASSIC_1COSTITEMS, gText_1CostItemsOn_CLASSIC_1COSTITEMS, gText_1CostItemsOff_CLASSIC_1COSTITEMS);
-    Draw3Choices(gTasks[taskId].tEVTraining_CLASSIC_EVTRAINING, gTasks[taskId].tMenuOffset, MENUITEM_EVTRAINING_CLASSIC_EVTRAINING, gText_EVTrainingOff_CLASSIC_EVTRAINING, gText_EVTrainingVanilla_CLASSIC_EVTRAINING, gText_EVTrainingEasy_CLASSIC_EVTRAINING);
+    #define SET_DATA_ITEMS(name, count, ___, ...) DrawChoices##count(gTasks[taskId].data[M(name)], gTasks[taskId].tMenuOffset, M(name), __VA_ARGS__); 
+        OPTIONS(SET_DATA_ITEMS)
+    #undef SET_DATA_ITEMS
+
+    WindowFrameType_DrawChoices(gTasks[taskId].tWindowFrameType, gTasks[taskId].tMenuOffset);
 
     HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
 

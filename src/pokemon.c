@@ -2896,9 +2896,9 @@ void CalculateMonStats(struct Pokemon *mon)
 }
 
 
-u8 MaxLevel_CLASSIC_LEVELCAP(void)
+u8 MaxLevel(void)
 {
-    if(!(gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP))
+    if(!(gSaveBlock2Ptr->optionsLevelCap))
         return MAX_LEVEL;
     else if(FlagGet(FLAG_DEFEATED_METEOR_FALLS_STEVEN))
         return 100;
@@ -4774,15 +4774,15 @@ bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, u16 item, u8 partyIndex, 
     }                                                                                                   \
 }
 
-void EV_ITEM_RAISE_LIMIT_CLASSIC_EVTRAINING(int *val)
+void EvItemRaiseLimit(int *val)
 {
-    switch(gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING)
+    switch(gSaveBlock2Ptr->optionsEvTraining)
     {
-        case OPTIONS_EVTRAINING_OFF_CLASSIC_EVTRAINING:
+        case OPTIONS_EVTRAINING_OFF:
             val[0] = 0;
             val[1] = 0;
         break;
-        case OPTIONS_EVTRAINING_EASY_CLASSIC_EVTRAINING:
+        case OPTIONS_EVTRAINING_EASY:
             val[0] = 252;
             val[1] = -1;
         break;
@@ -4813,8 +4813,8 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
     s8 evChange;
     u16 evCount;
 
-    int ev_item_raise_limit_CLASSIC_EVTRAINING[2] = {0};
-    EV_ITEM_RAISE_LIMIT_CLASSIC_EVTRAINING(ev_item_raise_limit_CLASSIC_EVTRAINING);
+    int ev_item_raise_limit[2] = {0};
+    EvItemRaiseLimit(ev_item_raise_limit);
 
     // Get item hold effect
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, NULL);
@@ -4963,7 +4963,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
 
             // Rare Candy
             if ((itemEffect[i] & ITEM3_LEVEL_UP)
-             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MaxLevel_CLASSIC_LEVELCAP())
+             && GetMonData(mon, MON_DATA_LEVEL, NULL) != MaxLevel())
             {
                 dataUnsigned = gExperienceTables[gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES, NULL)].growthRate][GetMonData(mon, MON_DATA_LEVEL, NULL) + 1];
                 SetMonData(mon, MON_DATA_EXP, &dataUnsigned);
@@ -5035,14 +5035,14 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         if (evChange > 0) // Increasing EV (HP or Atk)
                         {
                             // Has EV increase limit already been reached?
-                            if (evCount >= MAX_TOTAL_EVS || ev_item_raise_limit_CLASSIC_EVTRAINING[0] == 0)
+                            if (evCount >= MAX_TOTAL_EVS || ev_item_raise_limit[0] == 0)
                                 return TRUE;
-                            if (dataSigned >= ev_item_raise_limit_CLASSIC_EVTRAINING[0])
+                            if (dataSigned >= ev_item_raise_limit[0])
                                 break;
 
                             // Limit the increase
-                            if (dataSigned + evChange > ev_item_raise_limit_CLASSIC_EVTRAINING[0])
-                                temp2 = ev_item_raise_limit_CLASSIC_EVTRAINING[0] - (dataSigned + evChange) + evChange;
+                            if (dataSigned + evChange > ev_item_raise_limit[0])
+                                temp2 = ev_item_raise_limit[0] - (dataSigned + evChange) + evChange;
                             else
                                 temp2 = evChange;
 
@@ -5060,7 +5060,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                                 itemEffectParam++;
                                 break;
                             }
-                            dataSigned += (ev_item_raise_limit_CLASSIC_EVTRAINING[1] ? ev_item_raise_limit_CLASSIC_EVTRAINING[1]: evChange);
+                            dataSigned += (ev_item_raise_limit[1] ? ev_item_raise_limit[1]: evChange);
                             if (dataSigned < 0)
                                 dataSigned = 0;
                         }
@@ -5260,14 +5260,14 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         if (evChange > 0) // Increasing EV
                         {
                             // Has EV increase limit already been reached?
-                            if (evCount >= MAX_TOTAL_EVS || ev_item_raise_limit_CLASSIC_EVTRAINING[0] == 0)
+                            if (evCount >= MAX_TOTAL_EVS || ev_item_raise_limit[0] == 0)
                                 return TRUE;
-                            if (dataSigned >= ev_item_raise_limit_CLASSIC_EVTRAINING[0])
+                            if (dataSigned >= ev_item_raise_limit[0])
                                 break;
 
                             // Limit the increase
-                            if (dataSigned + evChange > ev_item_raise_limit_CLASSIC_EVTRAINING[0])
-                                temp2 = ev_item_raise_limit_CLASSIC_EVTRAINING[0] - (dataSigned + evChange) + evChange;
+                            if (dataSigned + evChange > ev_item_raise_limit[0])
+                                temp2 = ev_item_raise_limit[0] - (dataSigned + evChange) + evChange;
                             else
                                 temp2 = evChange;
 
@@ -5285,7 +5285,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                                 itemEffectParam++;
                                 break;
                             }
-                            dataSigned += (ev_item_raise_limit_CLASSIC_EVTRAINING[1] ? ev_item_raise_limit_CLASSIC_EVTRAINING[1]: evChange);
+                            dataSigned += (ev_item_raise_limit[1] ? ev_item_raise_limit[1]: evChange);
                             if (dataSigned < 0)
                                 dataSigned = 0;
                         }
@@ -6039,7 +6039,7 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
     u8 holdEffect;
     int i, multiplier;
 
-    if(gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING == OPTIONS_EVTRAINING_OFF_CLASSIC_EVTRAINING)
+    if(gSaveBlock2Ptr->optionsEvTraining == OPTIONS_EVTRAINING_OFF)
         return; 
 
     for (i = 0; i < NUM_STATS; i++)
@@ -6279,7 +6279,7 @@ bool8 TryIncrementMonLevel(struct Pokemon *mon)
         expPoints = gExperienceTables[gSpeciesInfo[species].growthRate][MAX_LEVEL];
         SetMonData(mon, MON_DATA_EXP, &expPoints);
     }
-    if (nextLevel > MaxLevel_CLASSIC_LEVELCAP()  || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
+    if (nextLevel > MaxLevel()  || expPoints < gExperienceTables[gSpeciesInfo[species].growthRate][nextLevel])
     {
         return FALSE;
     }
@@ -6623,7 +6623,7 @@ bool32 IsHMMove2(u16 move)
 {
     int i = 0;
 
-    if(gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS)
+    if(gSaveBlock2Ptr->optionsForgetHm)
         return FALSE;
 
     while (sHMMoves[i] != HM_MOVES_END)

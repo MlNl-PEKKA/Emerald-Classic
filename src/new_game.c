@@ -45,6 +45,7 @@
 #include "mystery_gift.h"
 #include "union_room_chat.h"
 #include "constants/items.h"
+#include "option_menu.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 
@@ -90,17 +91,15 @@ static void InitPlayerTrainerId(void)
 // L=A isnt set here for some reason.
 static void SetDefaultOptions(void)
 {
+    #define SET_DEFAULT_OPTIONS(name, ...) gSaveBlock2Ptr->options##name = 0;
+        OPTIONS(SET_DEFAULT_OPTIONS)
+    #undef SET_DEFAULT_OPTIONS
+    
+    //Overwrites
     gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
+    gSaveBlock2Ptr->optionsEvTraining = OPTIONS_EVTRAINING_NORMAL;
+
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
-    gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
-    gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
-    gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
-    gSaveBlock2Ptr->optionsLevelCap_CLASSIC_LEVELCAP = FALSE;
-    gSaveBlock2Ptr->optionsForgetHMs_CLASSIC_FORGETHMS = FALSE;
-    gSaveBlock2Ptr->optionsInfiniteTMs_CLASSIC_INFINITETMS = FALSE;
-    gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL = FALSE;
-    gSaveBlock2Ptr->options1CostItems_CLASSIC_1COSTITEMS = FALSE;
-    gSaveBlock2Ptr->optionsEVTraining_CLASSIC_EVTRAINING = OPTIONS_EVTRAINING_VANILLA_CLASSIC_EVTRAINING;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
 }
 

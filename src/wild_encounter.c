@@ -860,7 +860,7 @@ bool8 UpdateRepelCounter(void)
 
     if (steps != 0)
     {
-        if(!(gSaveBlock2Ptr->optionsPermaRepel_CLASSIC_PERMAREPEL))
+        if(!(gSaveBlock2Ptr->optionsPermaRepel))
             steps--;
         VarSet(VAR_REPEL_STEP_COUNT, steps);
         if (steps == 0)
