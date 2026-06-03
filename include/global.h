@@ -536,7 +536,8 @@ struct SaveBlock2
              u8 optionsNoFleeingMon:1;
              u8 optionsAlwaysFeebas:1;
              u8 optionsAutoBlend:1;
-             // u8 5 bits
+             u8 optionsCustomBlend:1;
+             // u8 4 bits
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;

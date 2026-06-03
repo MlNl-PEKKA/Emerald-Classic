@@ -1053,7 +1053,17 @@ void DoBerryBlending(void)
     sBerryBlender->mainState = 0;
     sBerryBlender->gameEndState = 0;
 
+    sBerryBlender->unk0 = 0;
+    sBerryBlender->unk1 = 1;
+
     InitLocalPlayers(gSpecialVar_0x8004);
+    SetMainCallback2(CB2_LoadBerryBlender);
+}
+
+static void SetAIBerry(void) 
+{
+    SetPlayerBerryData(sBerryBlender->unk1, gSpecialVar_ItemId);
+    sBerryBlender->unk1++;
     SetMainCallback2(CB2_LoadBerryBlender);
 }
 
@@ -1130,7 +1140,13 @@ static void CB2_LoadBerryBlender(void)
             UnsetBgTilemapBuffer(2);
             UnsetBgTilemapBuffer(1);
             SetVBlankCallback(NULL);
-            ChooseBerryForMachine(StartBlender);
+            if(gSaveBlock2Ptr->optionsCustomBlend && sBerryBlender->unk1 < (sBerryBlender->numPlayers))
+            {
+                ChooseBerryForMachine(SetAIBerry);
+                return;
+            }
+            else
+                ChooseBerryForMachine(StartBlender);
 
             sBerryBlender->mainState = 0;
         }
@@ -1279,8 +1295,15 @@ static void StartBlender(void)
     sBerryBlender->mainState = 0;
     sBerryBlender->unk1 = 0;
 
-    for (i = 0; i < BLENDER_MAX_PLAYERS; i++)
+    if(gSaveBlock2Ptr->optionsCustomBlend)
+    {
+        sBerryBlender->chosenItemId[0] = ITEM_NONE;
+    }
+    else
+    {
+        for (i = 0; i < BLENDER_MAX_PLAYERS; i++)
         sBerryBlender->chosenItemId[i] = ITEM_NONE;
+    }
 
     InitLocalPlayers(gSpecialVar_0x8004);
 
@@ -1640,7 +1663,8 @@ static void CB2_StartBlenderLocal(void)
         InitBlenderBgs();
         SetPlayerBerryData(0, gSpecialVar_ItemId);
         ConvertItemToBlenderBerry(&sBerryBlender->blendedBerries[0], gSpecialVar_ItemId);
-        SetOpponentsBerryData(gSpecialVar_ItemId, sBerryBlender->numPlayers, &sBerryBlender->blendedBerries[0]);
+        if(!(gSaveBlock2Ptr->optionsCustomBlend))
+            SetOpponentsBerryData(gSpecialVar_ItemId, sBerryBlender->numPlayers, &sBerryBlender->blendedBerries[0]);
 
         for (i = 0; i < BLENDER_MAX_PLAYERS; i++)
         {

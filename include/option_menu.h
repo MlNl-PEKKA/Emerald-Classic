@@ -38,5 +38,7 @@ void CB2_InitOptionMenu(void);
     X(AlwaysFeebas, 2, NULL, \
       Y(On), Y(Off)) \
     X(AutoBlend, 2, NULL, \
+      Y(On), Y(Off)) \
+    X(CustomBlend, 2, NULL, \
       Y(On), Y(Off)) 
 #endif
