@@ -320,6 +320,7 @@ extern const u8 gText_OneCostItem[];
 extern const u8 gText_EvTraining[];
 extern const u8 gText_BetterSafari[];
 extern const u8 gText_NoFleeingMon[];
+extern const u8 gText_AlwaysFeebas[];
 extern const u8 gText_BattleStyle[];
 extern const u8 gText_Sound[];
 extern const u8 gText_WindowFrameType[];

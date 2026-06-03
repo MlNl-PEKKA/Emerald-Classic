@@ -121,6 +121,9 @@ static bool8 CheckFeebas(void)
     if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_ROUTE119)
      && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_ROUTE119))
     {
+        if(gSaveBlock2Ptr->optionsAlwaysFeebas)
+            return TRUE;
+
         GetXYCoordsOneStepInFrontOfPlayer(&x, &y);
         x -= MAP_OFFSET;
         y -= MAP_OFFSET;

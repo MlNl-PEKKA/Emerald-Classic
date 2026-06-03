@@ -534,7 +534,8 @@ struct SaveBlock2
              u8 optionsOneCostItem:1; 
              u8 optionsBetterSafari:1;
              u8 optionsNoFleeingMon:1;
-             // u8 7 bits
+             u8 optionsAlwaysFeebas:1;
+             // u8 6 bits
     /*0x97*/ u8 filler_97;
     /*0x98*/ struct Time localTimeOffset;
     /*0xA0*/ struct Time lastBerryTreeUpdate;

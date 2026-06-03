@@ -34,5 +34,7 @@ void CB2_InitOptionMenu(void);
     X(BetterSafari, 2, NULL, \
       Y(On), Y(Off)) \
     X(NoFleeingMon, 2, NULL, \
+      Y(On), Y(Off)) \
+    X(AlwaysFeebas, 2, NULL, \
       Y(On), Y(Off)) 
 #endif
