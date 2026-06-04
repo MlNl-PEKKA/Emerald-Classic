@@ -17,8 +17,8 @@ void CB2_InitOptionMenu(void);
       Y(Shift), Y(Set)) \
     X(Sound, 2, Z(SetPokemonCryStereo), \
       Y(Mono), Y(Stereo)) \
-    X(ButtonMode, 2, NULL, \
-      Y(On), Y(Off)) \
+    X(ButtonMode, 3, NULL, \
+      Y(Normal), Y(LR), Y(LEqualsA)) \
     X(LevelCap, 2, NULL, \
       Y(On), Y(Off)) \
     X(ForgetHm, 2, NULL, \

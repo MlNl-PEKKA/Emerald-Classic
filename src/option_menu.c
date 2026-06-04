@@ -288,7 +288,7 @@ static void Task_OptionMenuProcessInput(u8 taskId)
         u8 previousOption;
         u8 selection = gTasks[taskId].tMenuSelection + gTasks[taskId].tMenuOffset;
         u8 pos;
-        #define Z(func, ...)  func(__VA_ARGS__ __VA_OPT__(,) gTasks[taskId].data[selection])
+        #define Z(func, ...)  func(__VA_ARGS__ __VA_OPT__(,) gTasks[taskId].data[pos])
         switch (selection)
         {
         #define CASES(name, count, callback, ...) \

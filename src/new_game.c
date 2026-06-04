@@ -101,7 +101,8 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->filler_90[2] = 255;
     
     //Overwrites
-    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
+    gSaveBlock2Ptr->optionsBattleScene = 1;
+    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
     gSaveBlock2Ptr->optionsEvTraining = OPTIONS_EVTRAINING_NORMAL;
 
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
