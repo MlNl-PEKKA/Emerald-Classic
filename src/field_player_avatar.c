@@ -655,8 +655,8 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
         return;
     }
 
-    if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER) && ((heldKeys & B_BUTTON) || (gSaveBlock2Ptr->optionsBetterRunning == OPTIONS_BETTERRUNNING_ALWAYS)) && FlagGet(FLAG_SYS_B_DASH)
-     && ((IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0) || (gSaveBlock2Ptr->optionsBetterRunning != OPTIONS_BETTERRUNNING_OFF)))
+    if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER) && ((heldKeys & B_BUTTON) || (gSaveBlock2Ptr->optionsRunning == OPTIONS_RUNNING_ALWAYS)) && FlagGet(FLAG_SYS_B_DASH)
+     && ((IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0) || (gSaveBlock2Ptr->optionsRunning != OPTIONS_RUNNING_OFF)))
     {
         PlayerRun(direction);
         gPlayerAvatar.flags |= PLAYER_AVATAR_FLAG_DASH;
@@ -1898,7 +1898,9 @@ static bool8 Fishing_WaitForA(struct Task *task)
 
     AlignFishingAnimationFrames();
     task->tFrameCounter++;
-    if (task->tFrameCounter >= reelTimeouts[task->tFishingRod])
+    if (gSaveBlock2Ptr->optionsAutoFish)
+        task->tStep++;
+    else if (task->tFrameCounter >= reelTimeouts[task->tFishingRod])
         task->tStep = FISHING_GOT_AWAY;
     else if (JOY_NEW(A_BUTTON))
         task->tStep++;
@@ -1917,7 +1919,7 @@ static bool8 Fishing_CheckMoreDots(struct Task *task)
 
     AlignFishingAnimationFrames();
     task->tStep++;
-    if (task->tRoundsPlayed < task->tMinRoundsRequired)
+    if ((task->tRoundsPlayed < task->tMinRoundsRequired) || (gSaveBlock2Ptr->optionsAutoFish))
     {
         task->tStep = FISHING_START_ROUND;
     }

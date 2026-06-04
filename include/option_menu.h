@@ -43,6 +43,8 @@ void CB2_InitOptionMenu(void);
       Y(On), Y(Off)) \
     X(BetterEvos, 3, NULL, \
       Y(Off), Y(Lvl30), Y(Item)) \
-    X(BetterRunning, 3, NULL, \
+    X(Running, 3, NULL, \
+      Y(Off), Y(Indoor), Y(Perma)) \
+    X(AutoFish, 3, NULL, \
       Y(Off), Y(Indoor), Y(Perma)) 
 #endif
